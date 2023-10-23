@@ -21,6 +21,14 @@ Rails.application.routes.draw do
         end
       end
     end
+
+    namespace 'graphql' do
+      namespace 'api' do
+        namespace 'v1' do
+          post 'get_data', to: 'graphql#index'
+        end
+      end
+    end
   end
 
 end

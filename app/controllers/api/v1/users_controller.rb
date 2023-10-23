@@ -7,7 +7,10 @@ module Api
 
       def index
         users = User.all
-        render status: :ok, json: users
+        data = {
+          result: users
+        }
+        render status: :ok, json: data
       end
 
       def create

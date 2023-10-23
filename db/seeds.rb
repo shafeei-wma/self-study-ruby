@@ -25,42 +25,25 @@ unless Post.exists?(id: 1)
 end
 puts "done seed!"
 
-# Execute the query
+# Execute the GraphQL query
 result = Schema.execute('{ user(id: 1,username: "pie_93") { username, email } }') # Step 1 - User define table/field they want and returned result
 puts result.inspect
 
-# Execute the query 2
+# Execute the GraphQL query 2
 result = Schema.execute('{ userSpecial(id: 1,username: "pie_93") { username, email,category } }') # Step 1 - User define table/field they want and returned result
 puts result.inspect
 
- # Handle form data, JSON body, or a blank value
- def ensure_hash(ambiguous_param)
-  case ambiguous_param
-  when String
-    if ambiguous_param.present?
-      ensure_hash(JSON.parse(ambiguous_param))
-    else
-      {}
-    end
-  when Hash, ActionController::Parameters
-    ambiguous_param
-  when nil
-    {}
-  else
-    raise ArgumentError, "Unexpected parameter: #{ambiguous_param}"
-  end
-end
+# Execute the GraphQL query 3
+params = {
+  "query": "query getPosts($userId: ID!) { post(userId: $userId) { title, content, media, ref1, ref2 } }",
+  "variables": {
+    "userId": 2
+  }
+}
 
-# Execute the query 3
-result = Schema.execute('{ post(userId: 2) { title, content,media,ref1,ref2 } }') # Step 1 - User define table/field they want and returned result
-# params = {
-#   "query": "query getPosts($userId: ID!) { post(userId: $userId) { title, content, media, ref1, ref2 } }",
-#   "variables": {
-#     "userId": 2
-#   }
-# }
-# variables = ensure_hash(params[:variables])
-# query = params[:query]
-# result = Schema.execute(query, variables: variables)
+variables = Graphql::Api::V1::GraphqlController.new.public_ensure_hash(params[:variables])
+query = params[:query]
+result = Schema.execute(query, variables: variables)
+# OR result = Schema.execute('{ post(userId: 2) { title, content,media,ref1,ref2 } }') # Step 1 - User define table/field they want and returned result
 puts result.inspect
 
